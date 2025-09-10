@@ -21,6 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Proceed with registration
         if ($adminObj->register($name, $username, $email, $phone, $password)) {
+            // ✅ Get the new admin's ID
+            $newAdminId = $db->conn->insert_id;
+
+            // ✅ Log in automatically
+            $_SESSION['admin_id'] = $newAdminId;
+
             header("Location: dashboard.php");
             exit();
         } else {
