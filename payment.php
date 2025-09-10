@@ -52,21 +52,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white shadow-lg rounded-xl w-full max-w-sm">
+  <div class="bg-white shadow-lg rounded-xl w-full max-w-sm p-6"> 
+
     <div class="relative border-b px-4 py-4 flex items-center justify-between">
       <button onclick="window.history.back();" class="text-gray-600 hover:text-gray-900 font-bold text-xl">&larr;</button>
-
       <h2 class="text-lg font-semibold text-blue-700">Pay Station</h2>
       <button onclick="window.location.href='index.php';" class="text-gray-600 hover:text-gray-900 font-bold text-xl">&times;</button>
     </div>
 
-
-    <div class="px-4 py-4 flex items-center justify-between bg-gray-100 mb-4">
+    <div class="px-4 py-4 flex items-center justify-between bg-gray-100 mb-4 rounded-lg">
       <p class="font-semibold">Pay Station</p>
       <p class="text-gray-500 text-sm">Invoice: <?= $invoiceNumber ?></p>
     </div>
 
-    <form method="POST" id="paymentForm" class="px-4 py-4">
+    <form method="POST" id="paymentForm" class="px-4 py-4 space-y-4">
       <h3 class="text-sm font-semibold text-center text-blue-400 mb-4">Card Information</h3>
 
       <div class="flex space-x-4 mb-4">
@@ -95,9 +94,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </button>
     </form>
 
-    <div class="px-4 py-3 border-t text-center text-xs text-gray-500">
+    <div class="px-4 py-3 border-t text-center text-xs text-gray-500 mt-6">
       <img src="PS_banner_final.png" />
-      Powered by <span class="font-bold text-blue-700">Abhishek</span>
+      <span class="mt-1 block">
+        Powered by <span class="font-bold text-blue-700">Abhishek</span>
+      </span>
     </div>
   </div>
 
