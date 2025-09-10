@@ -43,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
 
       <form method="POST" class="space-y-4 px-2 py-2"> 
+        <input type="text" name="Enter your name" placeholder="Name" required 
+               class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
         <input type="text" name="username" placeholder="Username" required 
                class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
         <input type="email" name="email" placeholder="Email Address" required 
