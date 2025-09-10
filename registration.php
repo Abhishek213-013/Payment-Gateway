@@ -9,16 +9,23 @@ $adminObj = new Admin($db->conn);
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $email    = $_POST['email'];
-    $phone    = $_POST['phone'];
-    $password = $_POST['password'];
+    $name     = $_POST['name'] ?? '';
+    $username = $_POST['username'] ?? '';
+    $email    = $_POST['email'] ?? '';
+    $phone    = $_POST['phone'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-    if ($adminObj->register($username, $email, $phone, $password)) {
-        header("Location: dashboard.php");
-        exit();
+    // Check if email already exists
+    if ($adminObj->emailExists($email)) {
+        $error = "Email address is already registered. Please use a different one.";
     } else {
-        $error = "Error registering account. Try again.";
+        // Proceed with registration
+        if ($adminObj->register($name, $username, $email, $phone, $password)) {
+            header("Location: dashboard.php");
+            exit();
+        } else {
+            $error = "Error registering account. Try again.";
+        }
     }
 }
 ?>
@@ -31,28 +38,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white shadow-lg rounded-xl w-full max-w-sm overflow-hidden p-6"> 
-    
     <div class="w-full bg-gray-200 px-4 py-6 text-center border-b"> 
       <img src="pst.png" alt="Logo" class="h-12 w-12 mx-auto mb-3">
       <h2 class="text-lg font-bold text-black">PayStation</h2>
     </div>
 
+    <!-- Form -->
     <div class="px-4 py-4"> 
       <?php if (!empty($error)): ?>
         <p class="text-red-600 text-sm my-4 text-center"><?= htmlspecialchars($error) ?></p>
       <?php endif; ?>
 
       <form method="POST" class="space-y-4 px-2 py-2"> 
-        <input type="text" name="Enter your name" placeholder="Name" required 
+        <input type="text" name="name" placeholder="Name" required 
                class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+
         <input type="text" name="username" placeholder="Username" required 
                class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+
         <input type="email" name="email" placeholder="Email Address" required 
                class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+
         <input type="text" name="phone" placeholder="Phone Number" required 
                class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+
         <input type="password" name="password" placeholder="Password" required 
                class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+
         <button type="submit" 
                 class="w-full bg-blue-700 text-white py-3 rounded-lg hover:bg-blue-800">
           Sign Up
@@ -78,7 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Powered by <span class="font-bold text-blue-700">Abhishek</span>
       </span>
     </div>
-
   </div>
 </body>
 </html>

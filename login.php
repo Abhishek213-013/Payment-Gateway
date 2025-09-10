@@ -6,11 +6,17 @@ include 'Admin.php';
 $db = new Database();
 $adminObj = new Admin($db->conn);
 
+// Redirect to dashboard if already logged in
+if (isset($_SESSION['admin_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identifier = $_POST['identifier'];
-    $password = $_POST['password'];
+    $identifier = $_POST['identifier'] ?? '';
+    $password   = $_POST['password'] ?? '';
 
     $result = $adminObj->login($identifier, $password);
 
