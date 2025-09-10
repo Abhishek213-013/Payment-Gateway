@@ -1,18 +1,19 @@
 <?php
 session_start();
-include 'db.php';
+include 'Database.php';
+include 'Admin.php';
+
+$db = new Database();
+$conn = $db->conn;
 
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.php");
     exit();
 }
 
-$stmt = $conn->prepare("SELECT username FROM admins WHERE id=?");
-$stmt->bind_param("i", $_SESSION['admin_id']);
-$stmt->execute();
-$stmt->bind_result($adminUsername);
-$stmt->fetch();
-$stmt->close();
+$admin = new Admin($conn);
+$adminInfo = $admin->getAdminById((int)$_SESSION['admin_id']);
+$adminUsername = $adminInfo['username'] ?? 'Admin';
 
 if (isset($_GET['logout'])) {
     session_destroy();
@@ -21,14 +22,18 @@ if (isset($_GET['logout'])) {
 }
 
 if (isset($_GET['delete'])) {
-    $deleteId = $_GET['delete'];
-    $conn->query("DELETE FROM users WHERE id=$deleteId");
+    $deleteId = (int)$_GET['delete'];
+    $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
+    $stmt->bind_param("i", $deleteId);
+    $stmt->execute();
+    $stmt->close();
     header("Location: dashboard.php");
     exit();
 }
 
-$result = $conn->query("SELECT id, name, amount, invoice, payment_status FROM users ORDER BY id ASC");
-
+$stmt = $conn->prepare("SELECT id, name, amount, invoice, payment_status FROM users ORDER BY id ASC");
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,7 +44,6 @@ $result = $conn->query("SELECT id, name, amount, invoice, payment_status FROM us
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
 
-  
   <nav class="bg-gray-200 px-6 py-4 flex items-center justify-between shadow sticky top-0 z-50">
     <div class="text-center text-lg font-semibold">
       Hello, <?= htmlspecialchars($adminUsername) ?>.
@@ -52,10 +56,8 @@ $result = $conn->query("SELECT id, name, amount, invoice, payment_status FROM us
     </div>
   </nav>
 
-  
   <div class="flex-1 flex items-center justify-center px-6 py-6">
     <div class="bg-white shadow-lg rounded-xl w-full max-w-5xl overflow-auto max-h-[75vh]">
-
       <table class="w-full border text-sm rounded-lg overflow-hidden">
         <thead class="bg-gray-200 sticky top-0 z-40">
           <tr class="text-left">
@@ -76,8 +78,8 @@ $result = $conn->query("SELECT id, name, amount, invoice, payment_status FROM us
             <td class="border px-4 py-2"><?= $counter++ ?></td>
             <td class="border px-4 py-2"><?= $row['id'] ?></td>
             <td class="border px-4 py-2"><?= htmlspecialchars($row['name']) ?></td>
-            <td class="border px-4 py-2"><?= $row['invoice'] ?></td>
-            <td class="border px-4 py-2">BDT <?= $row['amount'] ?></td>
+            <td class="border px-4 py-2"><?= htmlspecialchars($row['invoice']) ?></td>
+            <td class="border px-4 py-2">BDT <?= htmlspecialchars($row['amount']) ?></td>
             <td class="border px-4 py-2">
               <?= $row['payment_status'] == 1 ? "✅ Paid" : ($row['payment_status'] == 2 ? "❌ Canceled" : "⏳ Pending") ?>
             </td>
@@ -91,14 +93,10 @@ $result = $conn->query("SELECT id, name, amount, invoice, payment_status FROM us
           <?php endwhile; ?>
         </tbody>
       </table>
-
     </div>
   </div>
 
-  <footer class="bg-gray-200 w-full py-4 text-center text-xs text-gray-500 mt-auto shadow-inner">
-    <img src="PS_banner_final.png" class="mx-auto mb-1" />
-    Powered by <span class="font-bold text-blue-700">Abhishek</span>
-  </footer>
+
 
 </body>
 </html>

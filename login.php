@@ -1,31 +1,28 @@
 <?php
 session_start();
-include 'db.php';
+include 'Database.php';
+include 'Admin.php';
+
+$db = new Database();
+$adminObj = new Admin($db->conn);
+
+$error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identifier = $_POST['identifier'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT id, password FROM admins WHERE username=? OR email=?");
-    $stmt->bind_param("ss", $identifier, $identifier);
-    $stmt->execute();
-    $stmt->store_result();
+    $result = $adminObj->login($identifier, $password);
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($adminId, $hashedPassword);
-        $stmt->fetch();
-
-        if (password_verify($password, $hashedPassword)) {
-            $_SESSION['admin_id'] = $adminId;
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            $error = "Invalid password.";
-        }
-    } else {
+    if ($result === false) {
+        $error = "Invalid password.";
+    } elseif ($result === null) {
         $error = "No account found with this username/email.";
+    } else {
+        $_SESSION['admin_id'] = $result;
+        header("Location: dashboard.php");
+        exit();
     }
-    $stmt->close();
 }
 ?>
 <!DOCTYPE html>
@@ -43,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <?php if (!empty($error)): ?>
-      <p class="text-red-600 text-sm my-4 text-center"><?= $error ?></p> 
+      <p class="text-red-600 text-sm my-4 text-center"><?= htmlspecialchars($error) ?></p> 
     <?php endif; ?>
 
     <form method="POST" class="space-y-4 px-4 py-4"> 

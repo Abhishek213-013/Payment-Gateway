@@ -1,17 +1,16 @@
 <?php
-include 'db.php';
+include 'Database.php';
+include 'User.php';
+
+$db = new Database();
+$userObj = new User($db->conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
+    $name   = $_POST['name'];
     $mobile = $_POST['number'];
     $amount = $_POST['amount'];
 
-    $stmt = $conn->prepare("INSERT INTO users (name, mobile, amount) VALUES (?, ?, ?)");
-    $stmt->bind_param("ssd", $name, $mobile, $amount);
-    $stmt->execute();
-
-    $userId = $stmt->insert_id;
-    $stmt->close();
+    $userId = $userObj->create($name, $mobile, $amount);
 
     header("Location: payment.php?id=$userId");
     exit();

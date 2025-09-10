@@ -1,31 +1,25 @@
 <?php
-include 'db.php';
+include 'Database.php';
+include 'User.php';
+
+$db = new Database();
+$userObj = new User($db->conn);
 
 if (!isset($_GET['id'])) die("User ID missing.");
 $userId = $_GET['id'];
 
 if (isset($_GET['cancel']) && $_GET['cancel'] == 1) {
-    $stmt = $conn->prepare("UPDATE users SET payment_status=2 WHERE id=?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $stmt->close();
+    $userObj->cancelPayment($userId);
     header("Location: index.php");
     exit();
 }
 
-$stmt = $conn->prepare("SELECT name, amount FROM users WHERE id=?");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-$stmt->close();
+$user = $userObj->getUserById($userId);
+
 
 $invoiceNumber = 'INV-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+$userObj->updateInvoice($userId, $invoiceNumber);
 
-$stmt = $conn->prepare("UPDATE users SET invoice=? WHERE id=?");
-$stmt->bind_param("si", $invoiceNumber, $userId);
-$stmt->execute();
-$stmt->close();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $card_number = $_POST['cardNumber'];
@@ -34,10 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cvv = $_POST['cvv'];
     $save_next = isset($_POST['save']) ? 1 : 0;
 
-    $stmt = $conn->prepare("UPDATE users SET card_number=?, expMM=?, expYY=?, cvv=?, save_next_payment=?, payment_status=1 WHERE id=?");
-    $stmt->bind_param("ssssii", $card_number, $expMM, $expYY, $cvv, $save_next, $userId);
-    $stmt->execute();
-    $stmt->close();
+    $userObj->processPayment($userId, $card_number, $expMM, $expYY, $cvv, $save_next);
 
     header("Location: success.php?id=$userId");
     exit();

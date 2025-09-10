@@ -1,22 +1,25 @@
 <?php
-include 'db.php';
+session_start();
+include 'Database.php';
+include 'Admin.php';
+
+$db = new Database();
+$adminObj = new Admin($db->conn);
+
+$error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $email    = $_POST['email'];
+    $phone    = $_POST['phone'];
+    $password = $_POST['password'];
 
-    $stmt = $conn->prepare("INSERT INTO admins (username, email, phone, password) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $username, $email, $phone, $password);
-
-    if ($stmt->execute()) {
+    if ($adminObj->register($username, $email, $phone, $password)) {
         header("Location: dashboard.php");
         exit();
     } else {
         $error = "Error registering account. Try again.";
     }
-    $stmt->close();
 }
 ?>
 <!DOCTYPE html>
@@ -36,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="px-4 py-4"> 
       <?php if (!empty($error)): ?>
-        <p class="text-red-600 text-sm my-4 text-center"><?= $error ?></p>
+        <p class="text-red-600 text-sm my-4 text-center"><?= htmlspecialchars($error) ?></p>
       <?php endif; ?>
 
       <form method="POST" class="space-y-4 px-2 py-2"> 
