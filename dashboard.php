@@ -6,6 +6,7 @@ include 'Admin.php';
 $db = new Database();
 $conn = $db->conn;
 
+// Redirect if not logged in
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.php");
     exit();
@@ -15,12 +16,14 @@ $admin = new Admin($conn);
 $adminInfo = $admin->getAdminById((int)$_SESSION['admin_id']);
 $adminUsername = $adminInfo['username'] ?? 'Admin';
 
+// Logout
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: login.php");
     exit();
 }
 
+// Delete user
 if (isset($_GET['delete'])) {
     $deleteId = (int)$_GET['delete'];
     $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
@@ -31,6 +34,7 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
+// Fetch transactions
 $stmt = $conn->prepare("SELECT id, name, amount, invoice, payment_status FROM users ORDER BY id ASC");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -39,15 +43,18 @@ $result = $stmt->get_result();
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+  <title>Admin Dashboard - PayStation</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
 
+  <!-- Header -->
   <nav class="bg-gray-200 px-6 py-4 flex items-center justify-between shadow sticky top-0 z-50">
-    <div class="text-center text-lg font-semibold">
-      Hello, <?= htmlspecialchars($adminUsername) ?>.
+    <div class="flex items-center gap-3">
+      <img src="pst.png" alt="Logo" class="h-8 w-8">
+      <span class="text-lg font-bold">PayStation</span>
     </div>
+    <div class="text-gray-700">Hello, <span class="font-semibold"><?= htmlspecialchars($adminUsername) ?></span></div>
     <div>
       <a href="dashboard.php?logout=1" 
          class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
@@ -56,8 +63,9 @@ $result = $stmt->get_result();
     </div>
   </nav>
 
-  <div class="flex-1 flex items-center justify-center px-6 py-6">
-    <div class="bg-white shadow-lg rounded-xl w-full max-w-5xl overflow-auto max-h-[75vh]">
+  <!-- Content -->
+  <main class="flex-1 flex items-center justify-center px-6 py-6">
+    <div class="bg-white shadow-lg rounded-xl w-full max-w-6xl overflow-auto max-h-[75vh]">
       <table class="w-full border text-sm rounded-lg overflow-hidden">
         <thead class="bg-gray-200 sticky top-0 z-40">
           <tr class="text-left">
@@ -81,22 +89,32 @@ $result = $stmt->get_result();
             <td class="border px-4 py-2"><?= htmlspecialchars($row['invoice']) ?></td>
             <td class="border px-4 py-2">BDT <?= htmlspecialchars($row['amount']) ?></td>
             <td class="border px-4 py-2">
-              <?= $row['payment_status'] == 1 ? "✅ Paid" : ($row['payment_status'] == 2 ? "❌ Canceled" : "⏳ Pending") ?>
+              <?php if ($row['payment_status'] == 1): ?>
+                <span class="text-green-600 font-semibold">✅ Paid</span>
+              <?php elseif ($row['payment_status'] == 2): ?>
+                <span class="text-red-600 font-semibold">❌ Canceled</span>
+              <?php else: ?>
+                <span class="text-yellow-600 font-semibold">⏳ Pending</span>
+              <?php endif; ?>
             </td>
             <td class="border px-4 py-2 text-center">
-              <a href="edit.php?id=<?= $row['id'] ?>" class="text-blue-600 font-bold">Edit</a> |
+              <a href="edit.php?id=<?= $row['id'] ?>" class="text-blue-600 font-bold hover:underline">Edit</a> |
               <a href="dashboard.php?delete=<?= $row['id'] ?>" 
                  onclick="return confirm('Delete this transaction?')" 
-                 class="text-red-600 font-bold">Delete</a>
+                 class="text-red-600 font-bold hover:underline">Delete</a>
             </td>
           </tr>
           <?php endwhile; ?>
         </tbody>
       </table>
     </div>
-  </div>
+  </main>
 
-
+  <!-- Footer -->
+  <footer class="px-4 py-3 border-t text-center text-xs text-gray-500 mt-6">
+    <img src="PS_banner_final.png" class="mx-auto mb-2" />
+    <span>Powered by <span class="font-bold text-blue-700">Abhishek</span></span>
+  </footer>
 
 </body>
 </html>

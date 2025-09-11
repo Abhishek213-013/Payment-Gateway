@@ -6,6 +6,7 @@ class Transaction {
         $this->conn = $conn;
     }
 
+    // Fetch a transaction by ID
     public function getById(int $id): ?array {
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE id=?");
         if (!$stmt) return null;
@@ -19,6 +20,7 @@ class Transaction {
         return $transaction ?: null;
     }
 
+    // Check if invoice already exists (excluding an ID if needed)
     public function invoiceExists(string $invoice, ?int $excludeId = null): bool {
         if ($excludeId !== null) {
             $stmt = $this->conn->prepare("SELECT id FROM users WHERE invoice=? AND id!=?");
@@ -40,13 +42,16 @@ class Transaction {
         return $exists;
     }
 
+    // Update transaction details
     public function update(int $id, string $name, float $amount, string $invoice, int $payment_status): bool {
         $stmt = $this->conn->prepare(
             "UPDATE users SET name=?, amount=?, invoice=?, payment_status=? WHERE id=?"
         );
         if (!$stmt) return false;
 
-        $stmt->bind_param("ssdii", $name, $amount, $invoice, $payment_status, $id);
+        // FIXED: invoice must be string ("s"), not double ("d")
+        $stmt->bind_param("sdsii", $name, $amount, $invoice, $payment_status, $id);
+
         $success = $stmt->execute();
         $stmt->close();
 
