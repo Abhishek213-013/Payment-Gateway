@@ -51,17 +51,23 @@ $result = $stmt->get_result();
   <!-- Header -->
   <nav class="bg-gray-200 px-6 py-4 flex items-center justify-between shadow sticky top-0 z-50">
     <div class="flex items-center gap-3">
-      <img src="pst.png" alt="Logo" class="h-8 w-8">
-      <span class="text-lg font-bold">PayStation</span>
+      <a href="landing.php" class="flex items-center gap-2">
+        <img src="pst.png" alt="Logo" class="h-8 w-8 hover:opacity-80 transition">
+        <span class="text-lg font-bold">PayStation</span>
+      </a>
     </div>
-    <div class="text-gray-700">Hello, <span class="font-semibold"><?= htmlspecialchars($adminUsername) ?></span></div>
+    <div class="text-gray-700">
+      Hello, <span class="font-semibold"><?= htmlspecialchars($adminUsername) ?></span>
+    </div>
     <div>
       <a href="dashboard.php?logout=1" 
-         class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
         Logout
       </a>
     </div>
   </nav>
+
+
 
   <!-- Content -->
   <main class="flex-1 flex items-center justify-center px-6 py-6">

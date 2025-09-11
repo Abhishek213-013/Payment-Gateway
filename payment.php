@@ -45,11 +45,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white shadow-lg rounded-xl w-full max-w-sm p-6"> 
 
-    <div class="relative border-b px-4 py-4 flex items-center justify-between">
-      <button onclick="window.history.back();" class="text-gray-600 hover:text-gray-900 font-bold text-xl">&larr;</button>
-      <h2 class="text-lg font-semibold text-blue-700">Pay Station</h2>
-      <button onclick="window.location.href='index.php';" class="text-gray-600 hover:text-gray-900 font-bold text-xl">&times;</button>
-    </div>
+    <!-- Header -->
+<div class="w-full bg-gray-200 px-4 py-6 border-b">
+  <div class="flex items-center justify-start gap-8">
+    <!-- Back Button -->
+    <a href="index.php" class="text-gray-700 hover:text-gray-900 font-semibold px-2 py-1 rounded-lg border border-gray-300 hover:bg-gray-300">
+      ⬅
+    </a>
+
+    <!-- Logo + Title (unchanged) -->
+    <a href="landing.php" class="flex items-center justify-center gap-3">
+      <img src="pst.png" alt="Logo" class="h-10 w-10">
+      <h2 class="text-lg font-bold text-black">PayStation</h2>
+    </a>
+  </div>
+</div>
+
 
     <div class="px-4 py-4 flex items-center justify-between bg-gray-100 mb-4 rounded-lg">
       <p class="font-semibold">Pay Station</p>

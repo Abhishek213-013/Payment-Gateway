@@ -50,9 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white shadow-lg rounded-xl w-full max-w-sm overflow-hidden p-6"> 
     <!-- Header -->
-    <div class="w-full bg-gray-200 rounded-t-sm px-4 py-6 text-center border-b"> 
-      <img src="pst.png" alt="Logo" class="h-12 w-12 mx-auto mb-3">
-      <h2 class="text-lg font-bold text-black-700">PayStation</h2>
+    <div class="w-full bg-gray-200 px-4 py-6 text-center border-b">
+      <a href="landing.php" class="flex items-center justify-center gap-3">
+        <img src="pst.png" alt="Logo" class="h-10 w-10">
+        <h2 class="text-lg font-bold text-black">PayStation</h2>
+        </a>
     </div>
 
     <!-- Error Message -->
